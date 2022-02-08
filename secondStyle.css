@@ -1,0 +1,38 @@
+
+.info {
+    border-style:solid;
+    height:350px;
+    width:40%;
+    position:fixed;
+    left:30%;
+    top:30%;
+    background-color: coral;
+}
+
+html {
+ background-image: url("greenBackRain.png");
+ background-size:contain;
+}
+
+.info > img{
+    float:left;
+    width:50%;
+}
+
+.textInfo {
+    position:fixed;
+    left:50%;
+    top:40%;
+    font-size: 22px;
+}
+
+.logout{
+  text-decoration: none;
+  background-color: black;
+  color: white;
+}
+
+.logout:hover{
+  background-color: white;
+  color: black;
+}
