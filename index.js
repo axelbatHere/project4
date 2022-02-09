@@ -1,8 +1,6 @@
-const http = require("http");
 const express = require("express");
 const cors = require("cors");
 const pool = require("./sample");
-const bcrypt = require("bcrypt");
 const { query } = require("express");
 const app = express();
 
@@ -30,9 +28,9 @@ app.get("/players", (req, res) => {
 // GET DATA FILTERED
 
 app.get("/players/:id", (req, res) => {
-  const { id } = req.params;
+  const { username } = req.params;
   pool
-    .query("SELECT * FROM players WHERE player_id = $1", [id])
+    .query("SELECT * FROM players WHERE player_id = $1", [username])
     .then((data) => {
       return res.send(data.rows).status(200);
     })
@@ -44,87 +42,60 @@ app.get("/players/:id", (req, res) => {
 //POST DATA FOR NEW USERS
 
 app.post("/signup", (req, res) => {
-  const { username, password } = req.body;
-
-  if (!username || !password) {
-    let inputError = new Error("Invalid inputs provided for username/password");
-    return res
-      .status(400)
-      .json({ errorCode: "invalid inputs", errorMsg: inputError.message });
-  } else {
-    pool
-      .query("SELECT * FROM players WHERE username=$1", [username])
-      .then((data) => {
-        if (data.rows.length > 0) {
-          let duplicateError = new Error(`Username ${username} already exists`);
-          return res.status(400).json({
-            errorCode: "user exists",
-            errorMsg: duplicateError.message,
-          });
+  const {username, password} = req.body;
+  pool.query('SELECT * FROM testing WHERE username=$1', [username]).then(data => {
+    if (data.rows.length > 0) {
+      let duplicateError = new Error(`Username ${username} already exists`);
+      return res.status(400).json( {
+        errorCode: 'user exists',
+        errorMsg: duplicateError.message
+      });
+    } else {
+      pool.query('INSERT INTO testing (username, password, score) VALUES($1, $2, $3)', [username, password, 0], (error, results) => {
+        if (error) {
+          res.send(error.message).status(500);
         } else {
-          bcrypt.hash(password, 5, (err, hash) => {
-            if (err) {
-              return res.send(err).status(500);
-            } else {
-              pool
-                .query(
-                  "INSERT INTO players(username, password, score) VALUES($1,$2,$3) RETURNING *",
-                  [username, hash, 0]
-                )
-                .then((newPlayer) => {
-                  return res.send(newPlayer.rows).status(200);
-                })
-                .catch((err) => {
-                  return res.send(err.message).status(500);
-                });
-            }
-          });
+          res.status(200);
         }
       });
-  }
+    }
+  });
 });
 
 //POST REQUEST FOR LOGIN PLAYER
 // check if empty values user/pass
-app.post("/login", (req, res) => {
-  const { username, password } = req.body;
-  if (!username || !password) {
-    let inputError = new Error("Invalid inputs for username/password");
-    return res
-      .status(400)
-      .json({ errorCode: "Invalid Inputs", errorMsg: inputError.message });
-  } else {
-    pool
-      .query("SELECT * FROM players WHERE username = $1", [username])
+app.get("/login/:username", (req, res) => {
+  const { username, password} = req.params;
+  const user = username.substring(1);
+  console.log(user);
+  pool
+      .query("SELECT * FROM testing WHERE username = $1", [user])
       .then((data) => {
         if (data.rowCount < 1) {
-          let nonexistentError = new Error("Username does not exist");
-          return res.status(400).json({
-            errorCode: "No User found",
-            errorMsg: nonexistentError.message,
-          });
-        } else {
-          bcrypt.compare(password, data.rows[0].password, (err, result) => {
-            if (err) {
-              return res.send("Whoops...Error occurred").status(500);
+          pool.query("SELECT * FROM testing WHERE password = $1", [user]).then(data => {
+            if (data.rowCount < 1) {
+              let nonexistentError = new Error("Username does not exist");
+              return res.status(400).json({
+              errorCode: "No User found",
+              errorMsg: nonexistentError.message,
+            });
             } else {
-              if (result) {
-                return res.status(200).json({
-                  authorized: true,
-                  authMsg: "User has been authenticated",
-                  user: data.rows[0],
-                });
-              } else {
-                return res.status(400).json({
-                  errorCode: "Invalid Password",
-                  errorMsg: "The provided password was wrong",
-                });
-              }
+              return res.status(200).json({
+                authorized: true,
+                authMsg: "User has been authenticated",
+                user: data.rows[0],
+              });
             }
           });
-        }
+          
+      } else {
+        return res.status(200).json({
+          authorized: true,
+          authMsg: "User has been authenticated",
+          user: data.rows[0],
+        });
+      }
       });
-  }
 });
 
 //on correct guess

@@ -1,34 +1,35 @@
 //SIGNUP FETCH
-function signup() {
+async function signup() {
   console.log("function is executing");
-  fetch("http://localhost:3000/signup", {
-    method: "POST", // or 'PUT'
+  fetch('http://localhost:3000/signup', {
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
+      'Content-TYPE': 'application/json'
     },
-    body: JSON.stringify({
-      username: `${usernam}`,
-      password: `${passwor}`,
-    }),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      console.log("Success:", data);
+    body: JSON.stringify( {
+      username: `${usernam}`, 
+      password: `${passwor}`
     })
-    .catch((error) => {
-      console.error("Error:", error);
-    });
+  });
+}
+
+async function logIn(value) {
+  const response = await fetch(`http://localhost:3000/login/:${value}`);
+  const data = await response.json();
+  console.log(data);
 }
 
 // LOGIN
 function signUp() {
   document.querySelector(".buffer").style.visibility = "visible";
   document.querySelector("#login").textContent = "Sign Up";
+  signing = 1;
   //Can now properly switch forms when pressing between log in and sign in.
 }
 function login() {
   document.querySelector(".buffer").style.visibility = "visible";
   document.querySelector("#login").textContent = "Log In"; //With this, the names switch properly now.
+  signing = 2;
 }
 
 function modalClose() {
@@ -43,13 +44,25 @@ function resetScore() {
 
 let usernam = "";
 let passwor = "";
+let signing = 0;
 
 document.querySelector("#submitBut").onclick = function () {
   usernam = document.querySelector("#userName").value;
   passwor = document.querySelector("#passwordInput").value;
-  console.log("this is the username" + usernam);
+  console.log("this is the username " + usernam);
   console.log("this is the password " + passwor);
-  signup();
+  if (signing == 1) {
+    signup().catch(error => {
+    console.log('error');
+  })
+  } else if (signing == 2) {
+    logIn(usernam).catch(error => {
+      console.log('error');
+    });
+    logIn(passwor).catch(error => {
+      console.log('error');
+    });
+  }
 };
 
 // GAME
