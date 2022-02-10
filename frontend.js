@@ -94,6 +94,18 @@ document.querySelector("#submitBut").onclick = function () {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
+            username: `${response[i].username}`
+          })
+        }
+        fetch('http://localhost:3000/changePrevious', options);
+      }
+      for (let i = 0; i < response.length; i++) {
+        let options = {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
             username: `${response[i].username}`,
             host: 0
           })
@@ -111,7 +123,6 @@ document.querySelector("#submitBut").onclick = function () {
               })
             }
             fetch('http://localhost:3000/updatePrevious', options);
-            toCheck = true;
         } else { 
         fetch('http://localhost:3000/updateHost', options);
         }

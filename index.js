@@ -105,6 +105,13 @@ app.put('/updateHost', (req, res) => {
     })
 });
 
+app.put('/changePrevious', (req, res)=> {
+  const {username} = req.body;
+  pool.query("UPDATE testing SET previous_user = $1 WHERE username = $2", [0, username]).then(response => {
+    return res.status(200).json({});
+  })
+})
+
 app.put('/updatePrevious', (req, res) => {
   const {username} = req.body;
   pool.query("UPDATE testing SET previous_user = $1 WHERE username = $2", [1, username]).then(data => {
