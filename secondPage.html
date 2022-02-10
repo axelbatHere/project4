@@ -1,21 +1,29 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>About me!</title>
-    <link href="secondStyle.css" type="text/css" rel="stylesheet" />
-  </head>
-  <body>
-    <div class="info">
-      <img src="default-profile.png" />
+    <head>
+        <title>About me!</title>
+        <link href="secondStyle.css" type="text/css" rel="stylesheet">
+    </head>
+    <body>
+      <div class="info">
+      <img src="default-profile.png">
       <div class="textInfo">
-        <p>User's name:</p>
-        <p>Account Created:</p>
-        <p>Highest Score:</p>
-        <p>Current Win-Streak:</p>
-        <a id="logout" href=""> Log Out </a>
+          <p id="theUser">User's name: </p>
+          <p id="theScore">Highest Score: </p>
+          <!-- no longer need logout -->
+          <!-- <a class = "logout" href = "index.html"> Log Out </a> -->
+          </div>
       </div>
-    </div>
-
-    <script src="secondPage.js"></script>
-  </body>
+    <!-- second log in div -->
+      <div class="info2">
+      <img src="default-profile.png">
+      <div class="textInfo">
+          <p id="otherUser">Previous User's name: </p>
+          <p id="otherScore">Previous User's Highest Score: </p>
+          </div>
+      <!-- end of second login -->
+      </div>
+        
+        <script src="secondPage.js"></script>
+    </body>
 </html>

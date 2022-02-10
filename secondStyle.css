@@ -1,38 +1,42 @@
-
 .info {
-    border-style:solid;
-    height:350px;
-    width:40%;
-    position:fixed;
-    left:30%;
-    top:30%;
-    background-color: coral;
+  margin: auto;
+  border-style:solid;
+  /* height:350px; */
+  width:40%;
+  /* position:fixed; */
+  /* left:30%;
+  top:10%; */
+  background-color: tan;
+  margin-bottom: 5%;
+}
+/* added info2 */
+.info2 {
+  margin: auto;
+  border-style:solid;
+  width:40%;
+  background-color: tan;
 }
 
+/* different url */
 html {
- background-image: url("greenBackRain.png");
- background-size:contain;
+background-image: url("greenSquares.jpg");
+background-size:contain;
 }
 
+/* changed width of imgs */
 .info > img{
-    float:left;
-    width:50%;
+  float:left;
+  width:40%;
+}
+.info2 > img{
+  float:left;
+  width:40%;
 }
 
+/* changed margin and padding */
 .textInfo {
-    position:fixed;
-    left:50%;
-    top:40%;
-    font-size: 22px;
-}
-
-#logout{
-  text-decoration: none;
-  background-color: black;
-  color: white;
-}
-
-.logout:hover{
-  background-color: white;
-  color: black;
+  margin-top: 10%;
+  padding-bottom:10%;
+  margin-left:10%;
+  font-size: 22px;
 }

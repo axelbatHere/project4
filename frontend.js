@@ -13,10 +13,21 @@ async function signup() {
   });
 }
 
+
+async function getDatau() {
+  const response = await fetch('http://localhost:3000/players');
+  const data = await response.json();
+  return data;
+}
+
+
 async function logIn(value) {
   const response = await fetch(`http://localhost:3000/login/:${value}`);
   const data = await response.json();
-  console.log(data);
+  highScore = data.user.score;
+  document.querySelector(
+    ".highScore"
+  ).textContent = `Highscore: ${highScore}`;
 }
 
 // LOGIN
@@ -30,6 +41,16 @@ function login() {
   document.querySelector(".buffer").style.visibility = "visible";
   document.querySelector("#login").textContent = "Log In"; //With this, the names switch properly now.
   signing = 2;
+}
+
+function logOut() {
+  document.querySelector('#profilePic').style.display = "none";
+  document.querySelector('#signInButton').style.visibility = "visible";
+  document.querySelector('#thelogInT').style.visibility = "visible";
+  reset();
+  document.querySelector(
+    ".highScore"
+  ).textContent = `Highscore: ` + 0;
 }
 
 function modalClose() {
@@ -46,15 +67,18 @@ let usernam = "";
 let passwor = "";
 let signing = 0;
 
+
+
 document.querySelector("#submitBut").onclick = function () {
   usernam = document.querySelector("#userName").value;
   passwor = document.querySelector("#passwordInput").value;
-  console.log("this is the username " + usernam);
-  console.log("this is the password " + passwor);
   if (signing == 1) {
     signup().catch(error => {
     console.log('error');
-  })
+  });
+  usernam = "";
+  passwor = "";
+  document.querySelector('#signInButton').style.visibility = "hidden";
   } else if (signing == 2) {
     logIn(usernam).catch(error => {
       console.log('error');
@@ -62,6 +86,53 @@ document.querySelector("#submitBut").onclick = function () {
     logIn(passwor).catch(error => {
       console.log('error');
     });
+    getDatau().then(response => {
+      for (let i = 0; i < response.length; i++) {
+        let options = {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            username: `${response[i].username}`,
+            host: 0
+          })
+        }
+        if (response[i].username != usernam) {
+        if (response[i].host == 1) {
+          fetch('http://localhost:3000/updateHost', options);
+            options = {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                username: `${response[i].username}`
+              })
+            }
+            fetch('http://localhost:3000/updatePrevious', options);
+            toCheck = true;
+        } else { 
+        fetch('http://localhost:3000/updateHost', options);
+        }
+        } else {
+          options = {
+            method:'PUT',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              username: `${response[i].username}`,
+              host: 1
+            })
+          }
+          fetch('http://localhost:3000/updateHost', options);
+        }
+      }
+    });
+    document.querySelector('#profilePic').style.display = "block";
+    document.querySelector('#signInButton').style.visibility = "hidden";
+    document.querySelector('#thelogInT').style.visibility = "hidden";
   }
 };
 
@@ -173,7 +244,20 @@ function returnText() {
       ).textContent = `Best Score: ${highScore}`;
     }
   } else {
-    if (gameTries > highScore) highScore = gameTries;
+    if (gameTries > highScore) {
+      highScore = gameTries;
+      const options = {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          username: `${usernam}`,
+          score: `${highScore}`
+        })
+      }
+      fetch('http://localhost:3000/updateScore', options);
+    }
     document.getElementById("win").style.visibility = "visible";
     document.getElementById("gameBar").style.visibility = "hidden";
     document.getElementById("mainGame").style.visibility = "hidden";
@@ -205,4 +289,6 @@ function reset() {
   history.innerHTML = "";
   gameTries = 10;
   userAnswer = [];
+  usernam = "";
+  passwor = "";
 }
